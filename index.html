@@ -9,7 +9,6 @@
 
 body {
     background-color: black;
-    color: #00ffcc;
     font-family: 'Press Start 2P', cursive;
     display: flex;
     justify-content: center;
@@ -18,15 +17,22 @@ body {
     text-align: center;
 }
 
-.container {
-    width: 80%;
-    max-width: 800px;
+/* ===== CORES DAS FASES ===== */
+
+#fase1 {
+    color: #ff4df0; /* ROSA NEON */
 }
+
+#fase2 {
+    color: #b84dff; /* ROXO */
+}
+
+/* ===== INPUTS E BOTÕES ===== */
 
 input {
     background: black;
-    border: 3px solid #00ffcc;
-    color: #00ffcc;
+    border: 3px solid currentColor;
+    color: currentColor;
     padding: 10px;
     margin-top: 20px;
     width: 90%;
@@ -35,8 +41,8 @@ input {
 
 button {
     background: black;
-    border: 3px solid #00ffcc;
-    color: #00ffcc;
+    border: 3px solid currentColor;
+    color: currentColor;
     padding: 10px 20px;
     margin-top: 20px;
     cursor: pointer;
@@ -44,7 +50,7 @@ button {
 }
 
 button:hover {
-    background-color: #00ffcc;
+    background-color: currentColor;
     color: black;
 }
 
@@ -57,7 +63,7 @@ button:hover {
     margin-top: 30px;
     background: #111;
     padding: 20px;
-    border: 2px solid #00ffcc;
+    border: 2px solid currentColor;
     font-size: 10px;
     line-height: 18px;
     overflow-x: auto;
