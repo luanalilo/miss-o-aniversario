@@ -1,1 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Missão Arcade</title>
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+    background-color: black;
+    color: #00ffcc;
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.container {
+    width: 80%;
+    max-width: 800px;
+}
+
+input {
+    background: black;
+    border: 3px solid #00ffcc;
+    color: #00ffcc;
+    padding: 10px;
+    margin-top: 20px;
+    width: 90%;
+    font-family: 'Press Start 2P', cursive;
+}
+
+button {
+    background: black;
+    border: 3px solid #00ffcc;
+    color: #00ffcc;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive;
+}
+
+button:hover {
+    background-color: #00ffcc;
+    color: black;
+}
+
+.hidden {
+    display: none;
+}
+
+.code-box {
+    text-align: left;
+    margin-top: 30px;
+    background: #111;
+    padding: 20px;
+    border: 2px solid #00ffcc;
+    font-size: 10px;
+    line-height: 18px;
+    overflow-x: auto;
+}
+
+.success {
+    color: #00ff00;
+}
+
+.error {
+    color: red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="fase1">
+<h2>INSERT COIN</h2>
+<p>Digite a senha para começar:</p>
+<input type="password" id="senha">
+<br>
+<button onclick="verificarSenha()">START</button>
+<p id="erroSenha"></p>
+</div>
+
+<div id="fase2" class="hidden">
+<h2>FASE 1 - DECODIFIQUE</h2>
+
+<div class="code-box">
+def identidade(inicio, atual):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;aliases = [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"".join(chr(c) for c in [66,97,116,109,97,110]),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"".join(chr(c) for c in [77,117,108,104,101,114,32,71,97,116,111])<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if inicio and atual != "amor":<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return f"No começo não nos chamávamos de {atual}, e sim de {aliases[0]} e {aliases[1]}."<br><br>
+print(identidade(True, "amor"))
+</div>
+
+<p>Escreva a frase final em português:</p>
+
+<input type="text" id="resposta">
+<br>
+<button onclick="verificarResposta()">ENVIAR</button>
+<p id="feedback"></p>
+
+<button id="botaoFinal" class="hidden" onclick="irParaFinal()">CONTINUAR</button>
+
+</div>
+
+</div>
+
+<script>
+
+function verificarSenha() {
+    const senha = document.getElementById("senha").value;
+
+    if (senha === "08032004") {
+        document.getElementById("fase1").classList.add("hidden");
+        document.getElementById("fase2").classList.remove("hidden");
+    } else {
+        document.getElementById("erroSenha").innerHTML = "<span class='error'>Senha incorreta.</span>";
+    }
+}
+
+function normalizar(texto) {
+    return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[.,]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function verificarResposta() {
+
+    const respostaUsuario = normalizar(document.getElementById("resposta").value);
+
+    const respostaCorreta = normalizar(
+        "No começo não nos chamávamos de amor, e sim de Batman e Mulher Gato"
+    );
+
+    if (respostaUsuario === respostaCorreta) {
+        document.getElementById("feedback").innerHTML =
+            "<span class='success'>Resposta correta.</span>";
+        document.getElementById("botaoFinal").classList.remove("hidden");
+    } else {
+        document.getElementById("feedback").innerHTML =
+            "<span class='error'>Código incorreto. Tente novamente.</span>";
+    }
+}
+
+function irParaFinal() {
+    window.location.href = "final.html";
+}
+
+</script>
+
+</body>
+</html>
