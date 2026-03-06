@@ -10,6 +10,7 @@ body{
 margin:0;
 overflow:hidden;
 background:black;
+font-family:monospace;
 }
 
 #fundo{
@@ -22,17 +23,29 @@ object-fit:cover;
 #carro{
 position:absolute;
 bottom:120px;
-left:-300px;
+right:-350px;
 width:300px;
+}
+
+#personagem{
+position:absolute;
+bottom:120px;
+right:240px;
+width:40px;
+height:60px;
+display:none;
 }
 
 #envelope{
 position:absolute;
-bottom:220px;
+bottom:230px;
 left:50%;
 transform:translateX(-50%) scale(0);
 width:120px;
-cursor:pointer;
+height:80px;
+background:#f5f5f5;
+border:3px solid #444;
+display:none;
 }
 
 #carta{
@@ -40,20 +53,36 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%) scale(0);
-width:500px;
+width:560px;
+height:420px;
+background:#fffdf5;
+border:4px solid #ccc;
+padding:40px;
+box-sizing:border-box;
+display:none;
 }
 
 #texto{
-position:absolute;
-top:55%;
-left:50%;
-transform:translateX(-50%);
-width:420px;
-color:black;
-font-family:Courier New;
-font-size:18px;
-text-align:center;
 white-space:pre-line;
+color:#222;
+font-size:18px;
+}
+
+#botaoLido{
+
+margin-top:20px;
+padding:10px 20px;
+font-size:16px;
+border:none;
+background:#ff69b4;
+color:white;
+cursor:pointer;
+display:none;
+
+}
+
+.pixel{
+image-rendering: pixelated;
 }
 
 </style>
@@ -62,62 +91,150 @@ white-space:pre-line;
 <body>
 
 <img src="fundo.png" id="fundo">
-<img src="carro.png" id="carro">
-<img src="envelope.png" id="envelope">
-<img src="carta.png" id="carta">
 
+<img src="carro.png" id="carro" class="pixel">
+
+<div id="personagem" class="pixel"></div>
+
+<div id="envelope"></div>
+
+<div id="carta">
 <div id="texto"></div>
+<button id="botaoLido" onclick="finalizar()">LIDO</button>
+</div>
 
 <audio id="musica" src="musica.mp3"></audio>
 
 <script>
 
 let carro = document.getElementById("carro")
+let personagem = document.getElementById("personagem")
 let envelope = document.getElementById("envelope")
 let carta = document.getElementById("carta")
 let texto = document.getElementById("texto")
 let musica = document.getElementById("musica")
+let botaoLido = document.getElementById("botaoLido")
 
-let pos = -300
+/* PERSONAGEM PIXEL */
+
+personagem.innerHTML = `
+<div style="width:40px;height:10px;background:#5a3a1a;"></div>
+<div style="width:40px;height:20px;background:#ffd8b1;"></div>
+<div style="width:40px;height:20px;background:pink;"></div>
+<div style="width:40px;height:10px;background:#5a3a1a;"></div>
+`
+
+/* CARRO ENTRA */
+
+let pos = -350
 
 let movimento = setInterval(()=>{
 
 pos += 2
-carro.style.left = pos + "px"
+carro.style.right = pos + "px"
 
-if(pos >= window.innerWidth/2 - 150){
+if(pos >= window.innerWidth/2 - 450){
 
 clearInterval(movimento)
 
-setTimeout(()=>{
-envelope.style.transform="translateX(-50%) scale(1)"
-},1000)
+setTimeout(sairDoCarro,800)
 
 }
 
 },16)
 
-envelope.onclick = ()=>{
+/* PERSONAGEM SAI */
 
-envelope.style.display="none"
+function sairDoCarro(){
 
-carta.style.transform="translate(-50%,-50%) scale(1)"
+personagem.style.display="block"
+
+let p = 240
+
+let andando = setInterval(()=>{
+
+p += 1
+personagem.style.right = p + "px"
+
+if(p >= window.innerWidth/2 - 120){
+
+clearInterval(andando)
+
+mostrarEnvelope()
+
+}
+
+},16)
+
+}
+
+/* ENVELOPE */
+
+function mostrarEnvelope(){
+
+envelope.style.display="block"
+
+let escala = 0
+
+let anim = setInterval(()=>{
+
+escala += 0.03
+
+envelope.style.transform = "translateX(-50%) scale("+escala+")"
+
+if(escala >= 6){
+
+clearInterval(anim)
+
+abrirCarta()
+
+}
+
+},16)
+
+}
+
+/* CARTA */
+
+function abrirCarta(){
 
 musica.play()
+
+carta.style.display="block"
+
+let escala = 0
+
+let anim = setInterval(()=>{
+
+escala += 0.03
+
+carta.style.transform="translate(-50%,-50%) scale("+escala+")"
+
+if(escala >= 1){
+
+clearInterval(anim)
+
+digitar()
+
+}
+
+},16)
+
+}
+
+/* DIGITAR TEXTO */
+
+function digitar(){
 
 let mensagem = `Amor,
 
 Hoje você completa 22 anos, e eu não poderia deixar esse dia passar sem te escrever algumas palavras.
 
-Eu admiro muito você. Admiro a sua inteligência, a forma como você pensa, a maneira como se dedica às coisas que quer conquistar. Você é um homem muito inteligente, mas mais do que isso, você é um homem bom. Um bom homem, um bom amigo, alguém em quem as pessoas podem confiar. Isso é algo muito bonito de se ver e é uma das coisas que mais me faz ter orgulho de você.
+Eu admiro muito você. Admiro a sua inteligência, a forma como você pensa, a maneira como se dedica às coisas que quer conquistar.
 
-Eu torço muito pelo seu sucesso, de verdade. Quero ver você conquistando tudo aquilo que sonha, crescendo, realizando seus planos e se tornando cada vez mais a pessoa incrível que você já é. Você merece coisas boas nessa vida.
+Eu torço muito pelo seu sucesso, de verdade.
 
-Também preciso dizer algo que talvez você já saiba: você é o homem mais lindo do mundo para mim. E eu sou muito apaixonada por você. Estar ao seu lado é algo que eu valorizo muito, e sou muito grata por poder compartilhar a vida com você.
-
-Nesse novo ciclo que começa hoje, eu desejo que você tenha muitos e muitos anos prósperos, cheios de conquistas, paz e felicidade. Desejo também que Deus encontre o seu coraçãozinho, cuide de você, te guie e te faça muito feliz.
-
-E que venham muitos aniversários ainda… de preferência comigo ao seu lado.
+Também preciso dizer algo que talvez você já saiba: você é o homem mais lindo do mundo para mim. E eu sou muito apaixonada por você.
 
 Feliz 22 anos, meu amor.
 
@@ -125,17 +242,67 @@ Com todo o meu carinho.`
 
 let i = 0
 
-let digitando = setInterval(()=>{
+let intervalo = setInterval(()=>{
 
 texto.innerHTML += mensagem[i]
 
 i++
 
-if(i>=mensagem.length){
-clearInterval(digitando)
+if(i >= mensagem.length){
+
+clearInterval(intervalo)
+
+botaoLido.style.display="inline-block"
+
 }
 
-},50)
+},40)
+
+}
+
+/* FINAL */
+
+function finalizar(){
+
+carta.style.display="none"
+
+let p = parseInt(personagem.style.right)
+
+let voltar = setInterval(()=>{
+
+p -= 1
+personagem.style.right = p + "px"
+
+if(p <= 240){
+
+clearInterval(voltar)
+
+personagem.style.display="none"
+
+irEmbora()
+
+}
+
+},16)
+
+}
+
+function irEmbora(){
+
+let posCarro = pos
+
+let sair = setInterval(()=>{
+
+posCarro += 3
+carro.style.right = posCarro + "px"
+
+if(posCarro >= window.innerWidth + 400){
+
+clearInterval(sair)
+
+}
+
+},16)
 
 }
 
