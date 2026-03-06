@@ -5,8 +5,9 @@
     <title>Feliz 22 Anos!</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #111; overflow: hidden; font-family: 'Courier New', monospace; }
+        body { background: #000; overflow: hidden; font-family: 'Courier New', monospace; }
 
+        /* CENÁRIO */
         #palco {
             position: relative;
             width: 100vw; height: 100vh;
@@ -15,65 +16,99 @@
             image-rendering: pixelated;
         }
 
+        /* CARRO (MAIOR) */
         #carro {
             position: absolute;
-            bottom: 12%; right: -550px;
-            width: 450px; 
-            z-index: 50; /* Carro no meio */
+            bottom: 12%; right: -400px;
+            width: 420px; /* Aumentado conforme solicitado */
+            z-index: 10;
             transition: right 3s ease-out;
             image-rendering: pixelated;
         }
 
+        /* PERSONAGEM (SPRITE) */
         #boneca {
             position: absolute;
             bottom: 16%; left: 45%;
             width: 100px; height: 120px;
             background: url('personagem.png') no-repeat;
             background-size: 600px 240px;
-            background-position: -210px -10px;
-            z-index: 100; /* BONECA NA FRENTE DE TUDO */
-            visibility: hidden; /* Pré-carregada mas oculta */
-            transform: scaleX(-1); 
+            background-position: -210px -10px; /* Frame parada */
+            display: none;
+            z-index: 5;
+            transform: scaleX(-1); /* Virada para a esquerda */
             image-rendering: pixelated;
         }
 
+        /* ENVELOPE PIXELADO (CSS) */
         #envelope-wrapper {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            z-index: 200;
+            z-index: 20;
             display: none;
             cursor: pointer;
             transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .envelope-body {
+            width: 150px; height: 100px;
+            background: #d2b48c;
+            border: 4px solid #8b4513;
+            position: relative;
+        }
+        .envelope-flap {
+            position: absolute; top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-top: 50px solid #a0522d;
+            transition: transform 0.5s;
+            transform-origin: top;
+        }
 
-        .envelope-body { width: 180px; height: 120px; background: #d2b48c; border: 4px solid #8b4513; position: relative; }
-        .envelope-flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 90px solid transparent; border-right: 90px solid transparent; border-top: 60px solid #a0522d; transition: transform 0.5s; transform-origin: top; }
-
+        /* CARTA */
         #carta {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 90%; max-width: 550px;
-            height: 80vh; background: #fff; border: 6px solid #333; padding: 25px;
-            display: none; z-index: 300; flex-direction: column;
-            box-shadow: 20px 20px 0 rgba(0,0,0,0.5);
+            height: 80vh;
+            background: #fff;
+            border: 6px solid #333;
+            padding: 25px;
+            display: none;
+            z-index: 30;
+            box-shadow: 15px 15px 0 rgba(0,0,0,0.4);
+            flex-direction: column;
         }
-
-        #texto-area { flex-grow: 1; overflow-y: auto; color: #222; font-size: 18px; line-height: 1.6; white-space: pre-wrap; text-align: left; }
-        #btn-lido { background: #ff4757; color: #fff; border: none; padding: 15px; font-weight: bold; cursor: pointer; margin-top: 15px; display: none; }
+        #texto-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            color: #222;
+            font-size: 17px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        #btn-lido {
+            background: #ff4757; color: #fff;
+            border: none; padding: 15px;
+            font-weight: bold; cursor: pointer;
+            margin-top: 15px; display: none;
+        }
     </style>
 </head>
 <body>
 
-<audio id="musica" src="musica.mp3" preload="auto" loop></audio>
+<audio id="musica" src="musica.mp3" loop></audio>
 
 <div id="palco">
     <img src="carro.png" id="carro">
     <div id="boneca"></div>
-    
+
     <div id="envelope-wrapper" onclick="abrirCarta()">
-        <div class="envelope-body"><div class="envelope-flap" id="aba"></div></div>
+        <div class="envelope-body">
+            <div class="envelope-flap" id="aba"></div>
+        </div>
     </div>
 
     <div id="carta">
@@ -103,55 +138,60 @@ E que venham muitos aniversários ainda… de preferência comigo ao seu lado.
 Feliz 22 anos, meu amor.
 Com todo o meu carinho.`;
 
-    // 1. Carro entra
+    // 1. CARRO CHEGA
     window.onload = () => {
-        setTimeout(() => { carro.style.right = '30%'; }, 800);
+        setTimeout(() => { carro.style.right = '35%'; }, 1000);
     };
 
-    // 2. Quando o carro para, a boneca aparece
-    carro.addEventListener('transitionend', (e) => {
-        if(e.propertyName === 'right' && (carro.style.right === '30%' || carro.style.right === '35%')) {
-            boneca.style.visibility = 'visible'; // Torna visível
-            setTimeout(mostrarEnvelope, 1000);
+    // 2. PERSONAGEM SAI
+    carro.addEventListener('transitionend', () => {
+        if(carro.style.right === '35%') {
+            setTimeout(() => {
+                boneca.style.display = 'block';
+                setTimeout(mostrarEnvelope, 1000);
+            }, 500);
         }
     });
 
+    // 3. ENVELOPE CRESCE
     function mostrarEnvelope() {
         envelope.style.display = 'block';
-        setTimeout(() => { envelope.style.transform = 'translate(-50%, -50%) scale(2.2)'; }, 100);
+        setTimeout(() => { envelope.style.transform = 'translate(-50%, -50%) scale(2.5)'; }, 100);
     }
 
-    // 3. Abrir carta e tocar música
+    // 4. ABRIR CARTA E TOCAR MÚSICA
     function abrirCarta() {
-        musica.play().catch(err => console.log("Áudio bloqueado pelo navegador"));
         aba.style.transform = 'rotateX(180deg)';
+        musica.play();
         setTimeout(() => {
             envelope.style.display = 'none';
             carta.style.display = 'flex';
             digitar(0);
-        }, 700);
+        }, 600);
     }
 
     function digitar(i) {
         if (i < textoFinal.length) {
             textoArea.innerHTML += textoFinal.charAt(i);
             textoArea.scrollTop = textoArea.scrollHeight;
-            setTimeout(() => digitar(i + 1), 40);
+            setTimeout(() => digitar(i + 1), 45);
         } else {
             btnLido.style.display = 'block';
         }
     }
 
+    // 5. FINALIZAÇÃO
     function finalizar() {
         carta.style.display = 'none';
-        // Frame do beijo (ajuste se necessário)
-        boneca.style.backgroundPosition = '-420px -10px'; 
+        boneca.style.backgroundPosition = '-420px -10px'; // Frame do beijo/pulo
+        
         setTimeout(() => {
-            boneca.style.visibility = 'hidden';
+            boneca.style.display = 'none';
             carro.style.transition = 'right 2s ease-in';
-            carro.style.right = '120%'; 
+            carro.style.right = '110%'; // Carro vai embora
         }, 1500);
     }
 </script>
+
 </body>
 </html>
