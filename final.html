@@ -1,88 +1,78 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Para você ❤️</title>
+<title>Carta</title>
 
 <style>
 
 body{
-margin:0;
+background:#111;
+color:white;
+font-family:Arial;
+text-align:center;
 overflow:hidden;
-background:black;
-font-family:monospace;
 }
 
-#fundo{
-position:absolute;
-width:100%;
-height:100%;
-object-fit:cover;
+/* ENVELOPE */
+
+#envelope{
+font-size:80px;
+cursor:pointer;
+margin-top:150px;
 }
+
+/* CARTA */
+
+#carta{
+display:none;
+background:white;
+color:black;
+width:500px;
+padding:30px;
+margin:auto;
+margin-top:100px;
+border-radius:10px;
+line-height:1.5;
+}
+
+/* BOTÃO */
+
+button{
+margin-top:20px;
+padding:10px 25px;
+font-size:16px;
+cursor:pointer;
+}
+
+/* CENA DO CARRO */
+
+#cena{
+display:none;
+position:relative;
+width:100%;
+height:400px;
+margin-top:120px;
+}
+
+/* CARRO */
 
 #carro{
 position:absolute;
-bottom:120px;
-right:-350px;
-width:300px;
+bottom:0;
+left:40%;
+font-size:90px;
+transition: transform 3s linear;
 }
+
+/* PERSONAGEM */
 
 #personagem{
 position:absolute;
-bottom:120px;
-right:240px;
-width:40px;
-height:60px;
-display:none;
-}
-
-#envelope{
-position:absolute;
-bottom:230px;
-left:50%;
-transform:translateX(-50%) scale(0);
-width:120px;
-height:80px;
-background:#f5f5f5;
-border:3px solid #444;
-display:none;
-}
-
-#carta{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%) scale(0);
-width:560px;
-height:420px;
-background:#fffdf5;
-border:4px solid #ccc;
-padding:40px;
-box-sizing:border-box;
-display:none;
-}
-
-#texto{
-white-space:pre-line;
-color:#222;
-font-size:18px;
-}
-
-#botaoLido{
-
-margin-top:20px;
-padding:10px 20px;
-font-size:16px;
-border:none;
-background:#ff69b4;
-color:white;
-cursor:pointer;
-display:none;
-
-}
-
-.pixel{
-image-rendering: pixelated;
+bottom:20px;
+left:36%;
+font-size:60px;
+transition: transform 1s;
 }
 
 </style>
@@ -90,219 +80,68 @@ image-rendering: pixelated;
 
 <body>
 
-<img src="fundo.png" id="fundo">
+<audio id="musica" src="musica.mp3"></audio>
 
-<img src="carro.png" id="carro" class="pixel">
-
-<div id="personagem" class="pixel"></div>
-
-<div id="envelope"></div>
+<div id="envelope" onclick="abrirCarta()">✉️</div>
 
 <div id="carta">
-<div id="texto"></div>
-<button id="botaoLido" onclick="finalizar()">LIDO</button>
+
+<p>
+Amor,<br><br>
+
+Eu fiquei pensando em como começar essa carta…  
+e a verdade é que eu não estou escrevendo porque estou no auge do romantismo.  
+Estou escrevendo porque você é importante pra mim,  
+e quando algo é importante, eu escolho cuidar.<br><br>
+
+Eu admiro você.  
+Admiro o homem que você é, a forma como cuida de mim,  
+a sua força, a sua disciplina, a maneira como você não desiste das coisas.<br><br>
+
+Você é um homem incrível, e eu tenho muito orgulho de caminhar ao seu lado.
+</p>
+
+<button onclick="cartaLida()">Lido</button>
+
 </div>
 
-<audio id="musica" src="musica.mp3"></audio>
+<div id="cena">
+
+<div id="personagem">👩</div>
+<div id="carro">🚗</div>
+
+</div>
 
 <script>
 
-let carro = document.getElementById("carro")
-let personagem = document.getElementById("personagem")
-let envelope = document.getElementById("envelope")
-let carta = document.getElementById("carta")
-let texto = document.getElementById("texto")
-let musica = document.getElementById("musica")
-let botaoLido = document.getElementById("botaoLido")
-
-/* PERSONAGEM PIXEL */
-
-personagem.innerHTML = `
-<div style="width:40px;height:10px;background:#5a3a1a;"></div>
-<div style="width:40px;height:20px;background:#ffd8b1;"></div>
-<div style="width:40px;height:20px;background:pink;"></div>
-<div style="width:40px;height:10px;background:#5a3a1a;"></div>
-`
-
-/* CARRO ENTRA */
-
-let pos = -350
-
-let movimento = setInterval(()=>{
-
-pos += 2
-carro.style.right = pos + "px"
-
-if(pos >= window.innerWidth/2 - 450){
-
-clearInterval(movimento)
-
-setTimeout(sairDoCarro,800)
-
-}
-
-},16)
-
-/* PERSONAGEM SAI */
-
-function sairDoCarro(){
-
-personagem.style.display="block"
-
-let p = 240
-
-let andando = setInterval(()=>{
-
-p += 1
-personagem.style.right = p + "px"
-
-if(p >= window.innerWidth/2 - 120){
-
-clearInterval(andando)
-
-mostrarEnvelope()
-
-}
-
-},16)
-
-}
-
-/* ENVELOPE */
-
-function mostrarEnvelope(){
-
-envelope.style.display="block"
-
-let escala = 0
-
-let anim = setInterval(()=>{
-
-escala += 0.03
-
-envelope.style.transform = "translateX(-50%) scale("+escala+")"
-
-if(escala >= 6){
-
-clearInterval(anim)
-
-abrirCarta()
-
-}
-
-},16)
-
-}
-
-/* CARTA */
-
 function abrirCarta(){
 
-musica.play()
+document.getElementById("envelope").style.display="none";
+document.getElementById("carta").style.display="block";
 
-carta.style.display="block"
-
-let escala = 0
-
-let anim = setInterval(()=>{
-
-escala += 0.03
-
-carta.style.transform="translate(-50%,-50%) scale("+escala+")"
-
-if(escala >= 1){
-
-clearInterval(anim)
-
-digitar()
+let musica = document.getElementById("musica");
+musica.volume = 0.5;
+musica.play().catch(()=>{});
 
 }
 
-},16)
+function cartaLida(){
 
-}
+document.getElementById("carta").style.display="none";
+document.getElementById("cena").style.display="block";
 
-/* DIGITAR TEXTO */
+/* personagem entra no carro */
 
-function digitar(){
+setTimeout(()=>{
+document.getElementById("personagem").style.transform="translateX(60px)";
+},500);
 
-let mensagem = `Amor,
+/* carro vai embora */
 
-Hoje você completa 22 anos, e eu não poderia deixar esse dia passar sem te escrever algumas palavras.
-
-Eu admiro muito você. Admiro a sua inteligência, a forma como você pensa, a maneira como se dedica às coisas que quer conquistar.
-
-Eu torço muito pelo seu sucesso, de verdade.
-
-Também preciso dizer algo que talvez você já saiba: você é o homem mais lindo do mundo para mim. E eu sou muito apaixonada por você.
-
-Feliz 22 anos, meu amor.
-
-Com todo o meu carinho.`
-
-let i = 0
-
-let intervalo = setInterval(()=>{
-
-texto.innerHTML += mensagem[i]
-
-i++
-
-if(i >= mensagem.length){
-
-clearInterval(intervalo)
-
-botaoLido.style.display="inline-block"
-
-}
-
-},40)
-
-}
-
-/* FINAL */
-
-function finalizar(){
-
-carta.style.display="none"
-
-let p = parseInt(personagem.style.right)
-
-let voltar = setInterval(()=>{
-
-p -= 1
-personagem.style.right = p + "px"
-
-if(p <= 240){
-
-clearInterval(voltar)
-
-personagem.style.display="none"
-
-irEmbora()
-
-}
-
-},16)
-
-}
-
-function irEmbora(){
-
-let posCarro = pos
-
-let sair = setInterval(()=>{
-
-posCarro += 3
-carro.style.right = posCarro + "px"
-
-if(posCarro >= window.innerWidth + 400){
-
-clearInterval(sair)
-
-}
-
-},16)
+setTimeout(()=>{
+document.getElementById("carro").style.transform="translateX(1200px)";
+document.getElementById("personagem").style.transform="translateX(1200px)";
+},1500);
 
 }
 
