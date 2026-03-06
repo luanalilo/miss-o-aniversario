@@ -1,151 +1,204 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Carta</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Final do Desafio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<style>
+        body {
+            background: #111;
+            font-family: 'Courier New', Courier, monospace; /* Fonte mais "computacional" */
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-body{
-background:#111;
-color:white;
-font-family:Arial;
-text-align:center;
-overflow:hidden;
-}
+        /* PALCO PRINCIPAL */
+        #cenario {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: url('fundo.png') no-repeat center bottom;
+            background-size: cover;
+            image-rendering: pixelated; /* Mantém o estilo pixel art nítido */
+        }
 
-/* ENVELOPE */
+        /* CARRO */
+        #carro {
+            position: absolute;
+            bottom: 15%; /* Ajuste conforme a sua estrada na imagem fundo.png */
+            right: -300px;
+            width: 250px;
+            transition: right 3s ease-out;
+            z-index: 10;
+        }
 
-#envelope{
-font-size:80px;
-cursor:pointer;
-margin-top:150px;
-}
+        /* PERSONAGEM */
+        #personagem {
+            position: absolute;
+            bottom: 18%;
+            left: 50%;
+            width: 80px; /* Ajuste conforme o tamanho do frame */
+            height: 100px; /* Ajuste conforme o tamanho do frame */
+            background: url('personagem.png') no-repeat;
+            background-size: 500px 200px; /* Tamanho total da sua imagem spritesheet */
+            background-position: -10px -10px; /* Posição do primeiro frame */
+            display: none;
+            z-index: 5;
+            transform: scaleX(-1); /* Inverte o lado para olhar para a esquerda */
+        }
 
-/* CARTA */
+        /* ENVELOPE */
+        #envelope-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 20;
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
 
-#carta{
-display:none;
-background:white;
-color:black;
-width:500px;
-padding:30px;
-margin:auto;
-margin-top:100px;
-border-radius:10px;
-line-height:1.5;
-}
+        #envelope-img {
+            width: 200px;
+            image-rendering: pixelated;
+        }
 
-/* BOTÃO */
+        /* CARTA */
+        #carta {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 500px;
+            height: 400px;
+            background: #fdfdfd;
+            border: 4px solid #333;
+            padding: 30px;
+            display: none;
+            z-index: 30;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-button{
-margin-top:20px;
-padding:10px 25px;
-font-size:16px;
-cursor:pointer;
-}
+        #texto-carta {
+            color: #333;
+            font-size: 18px;
+            line-height: 1.4;
+            text-align: left;
+            overflow-y: auto;
+        }
 
-/* CENA DO CARRO */
+        button#btn-lido {
+            background: #2ecc71;
+            border: none;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            display: none;
+        }
 
-#cena{
-display:none;
-position:relative;
-width:100%;
-height:400px;
-margin-top:120px;
-}
-
-/* CARRO */
-
-#carro{
-position:absolute;
-bottom:0;
-left:40%;
-font-size:90px;
-transition: transform 3s linear;
-}
-
-/* PERSONAGEM */
-
-#personagem{
-position:absolute;
-bottom:20px;
-left:36%;
-font-size:60px;
-transition: transform 1s;
-}
-
-</style>
+    </style>
 </head>
-
 <body>
 
-<audio id="musica" src="musica.mp3"></audio>
+    <audio id="musica" src="musica.mp3" loop></audio>
 
-<div id="envelope" onclick="abrirCarta()">✉️</div>
+    <div id="cenario">
+        <img src="carro.png" id="carro" alt="Carro">
+        <div id="personagem"></div>
+        
+        <div id="envelope-container">
+            <img src="envelope.png" id="envelope-img" alt="Envelope">
+        </div>
 
-<div id="carta">
+        <div id="carta">
+            <div id="texto-carta"></div>
+            <button id="btn-lido" onclick="finalizarTudo()">LIDO</button>
+        </div>
+    </div>
 
-<p>
-Amor,<br><br>
+    <script>
+        const carro = document.getElementById('carro');
+        const personagem = document.getElementById('personagem');
+        const envelope = document.getElementById('envelope-container');
+        const carta = document.getElementById('carta');
+        const textoDiv = document.getElementById('texto-carta');
+        const musica = document.getElementById('musica');
+        const btnLido = document.getElementById('btn-lido');
 
-Eu fiquei pensando em como começar essa carta…  
-e a verdade é que eu não estou escrevendo porque estou no auge do romantismo.  
-Estou escrevendo porque você é importante pra mim,  
-e quando algo é importante, eu escolho cuidar.<br><br>
+        const mensagem = `Amor,\n\nEu fiquei pensando em como começar essa carta… e a verdade é que eu não estou escrevendo porque estou no auge do romantismo. Estou escrevendo porque você é importante pra mim, e quando algo é importante, eu escolho cuidar.\n\nEu admiro você. Admiro o homem que você é, a forma como cuida de mim, a sua força, a sua disciplina, a maneira como você não desiste das coisas.\n\nVocê é um homem incrível, e eu tenho muito orgulho de caminhar ao seu lado.`;
 
-Eu admiro você.  
-Admiro o homem que você é, a forma como cuida de mim,  
-a sua força, a sua disciplina, a maneira como você não desiste das coisas.<br><br>
+        // 1. Início: Carro entra em cena
+        window.onload = () => {
+            setTimeout(() => {
+                carro.style.right = '40%'; // Carro para no centro
+            }, 500);
+        };
 
-Você é um homem incrível, e eu tenho muito orgulho de caminhar ao seu lado.
-</p>
+        // 2. Quando o carro para, a personagem sai
+        carro.addEventListener('transitionend', () => {
+            if (carro.style.right === '40%') {
+                setTimeout(sairDoCarro, 500);
+            }
+        });
 
-<button onclick="cartaLida()">Lido</button>
+        function sairDoCarro() {
+            personagem.style.display = 'block';
+            // Simulação de movimento saindo do carro
+            setTimeout(() => {
+                personagem.style.left = '42%'; 
+                mostrarEnvelope();
+            }, 800);
+        }
 
-</div>
+        function mostrarEnvelope() {
+            envelope.style.display = 'block';
+            setTimeout(() => {
+                envelope.style.transform = 'translate(-50%, -50%) scale(2)'; // Envelope cresce
+                
+                // Clique para abrir o envelope
+                envelope.onclick = () => {
+                    envelope.style.display = 'none';
+                    abrirCarta();
+                };
+            }, 500);
+        }
 
-<div id="cena">
+        function abrirCarta() {
+            carta.style.display = 'flex';
+            musica.play();
+            digitarTexto(0);
+        }
 
-<div id="personagem">👩</div>
-<div id="carro">🚗</div>
+        function digitarTexto(i) {
+            if (i < mensagem.length) {
+                textoDiv.innerHTML += mensagem.charAt(i).replace(/\n/g, '<br>');
+                setTimeout(() => digitarTexto(i + 1), 50); // Velocidade da digitação
+            } else {
+                btnLido.style.display = 'block';
+            }
+        }
 
-</div>
-
-<script>
-
-function abrirCarta(){
-
-document.getElementById("envelope").style.display="none";
-document.getElementById("carta").style.display="block";
-
-let musica = document.getElementById("musica");
-musica.volume = 0.5;
-musica.play().catch(()=>{});
-
-}
-
-function cartaLida(){
-
-document.getElementById("carta").style.display="none";
-document.getElementById("cena").style.display="block";
-
-/* personagem entra no carro */
-
-setTimeout(()=>{
-document.getElementById("personagem").style.transform="translateX(60px)";
-},500);
-
-/* carro vai embora */
-
-setTimeout(()=>{
-document.getElementById("carro").style.transform="translateX(1200px)";
-document.getElementById("personagem").style.transform="translateX(1200px)";
-},1500);
-
-}
-
-</script>
-
+        function finalizarTudo() {
+            carta.style.display = 'none';
+            // Personagem manda beijo (aqui você poderia mudar o frame do sprite)
+            personagem.style.transform = 'scaleX(-1) translateY(-10px)'; // Pulinho de beijo
+            
+            setTimeout(() => {
+                personagem.style.display = 'none'; // Personagem "entra" no carro
+                carro.style.transition = 'right 2s ease-in';
+                carro.style.right = '120%'; // Carro vai embora para a esquerda
+            }, 1500);
+        }
+    </script>
 </body>
 </html>
